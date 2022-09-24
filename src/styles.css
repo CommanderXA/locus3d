@@ -1,0 +1,37 @@
+html,
+body,
+#map {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#data-list {
+    width: 50%;
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 auto;
+    z-index: 100;
+    background-color: white;
+    border-radius: 32px;
+    box-shadow: 0px 20px 50px #ccc;
+    overflow-y: scroll;
+    max-height: 50%;
+}
+
+.data-list-item {
+    padding: 24px 32px;
+    border-radius: 32px;
+}
+
+.data-list-item:hover {
+    background-color: green;
+    color: white;
+}
+
+.data-list-item-picture {}
+.data-list-item-content {}
+.data-list-item-title {}
+.data-list-item-text {}
