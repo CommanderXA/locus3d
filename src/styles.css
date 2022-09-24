@@ -1,3 +1,7 @@
+* {
+  font-family: "Roboto", sans-serif;
+}
+
 html,
 body,
 #map {
@@ -5,10 +9,6 @@ body,
   width: 100%;
   margin: 0;
   padding: 0;
-}
-
-* {
-  font-family: "Roboto", sans-serif;
 }
 
 body {
@@ -77,11 +77,6 @@ h2 {
 .menu-text h2 {
   font-size: 18px;
   padding: 0 16px;
-}
-
-#activity-pic {
-  height: 200px;
-  width: 100%;
 }
 
 .data-list-item:hover {

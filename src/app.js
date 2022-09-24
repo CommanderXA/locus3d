@@ -26,8 +26,6 @@ let points = [];
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-const material = new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 3 });
-
 async function initMap() {
     const mapDiv = document.getElementById("map");
     const apiLoader = new Loader(apiOptions);
@@ -56,6 +54,7 @@ function initWebGLOverlayView(map) {
             };
             map.panTo(mapOptions.center);
             map.setZoom(20);
+            mapOptions.altitude = points[i].Altitude;
             playbackComplete.innerHTML = '<h2 id="playback-title">Playback:</h2>' + '<h2 class="h2-value">'
                 + Math.round(((points[i].timestamp - points[0].timestamp)
                     / (points[points.length - 1].timestamp - points[0].timestamp)
@@ -78,10 +77,6 @@ function initWebGLOverlayView(map) {
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.25);
         directionalLight.position.set(0.5, -1, 0.5);
         scene.add(directionalLight);
-
-        let geometry = new THREE.BufferGeometry().setFromPoints(points);
-        let line = new THREE.Line(geometry, material);
-        scene.add(line);
 
         // load model
         loader = new GLTFLoader();
@@ -191,7 +186,6 @@ function initWebGLOverlayView(map) {
         // showing the data
         for (let i = 0; i < data.length; i++) {
             const dataListItem = document.createElement("option");
-            const dataListItemPicture = document.createElement("div");
             const dataListItemContent = document.createElement("div");
             const dataListItemTitle = document.createElement("div");
             const dataListItemText = document.createElement("div");
@@ -199,7 +193,6 @@ function initWebGLOverlayView(map) {
             dataListItem.className = "data-list-item";
             dataListItem.value = i;
 
-            dataListItemPicture.className = "data-list-item-picture";
             dataListItemContent.className = "data-list-item-content";
             dataListItemTitle.className = "data-list-item-title";
             dataListItemText.className = "data-list-item-text";
@@ -297,7 +290,6 @@ function initWebGLOverlayView(map) {
 
             dataListItemContent.appendChild(dataListItemTitle);
             dataListItemContent.appendChild(dataListItemText);
-            dataListItem.appendChild(dataListItemPicture);
             dataListItem.appendChild(dataListItemContent);
             dataList.appendChild(dataListItem);
         }
