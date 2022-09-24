@@ -23,11 +23,10 @@ let areaOptions = {
 };
 
 let points = [];
-const material = new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 3 });
 
-function latLngAltToMeters(lat, lng, alt) {
-    return [lat * 111.32, lng * 40075 * Math.cos(lat) / 360, alt * 0.3048];
-}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const material = new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 3 });
 
 async function initMap() {
     const mapDiv = document.getElementById("map");
@@ -44,6 +43,30 @@ function initWebGLOverlayView(map) {
         map.setCenter(mapOptions.center);
         map.setZoom(mapOptions.zoom);
         map.setTilt(mapOptions.tilt);
+    });
+
+    let playbackButton = document.getElementById("playback");
+    google.maps.event.addDomListener(playbackButton, 'click', async function () {
+        let playbackComplete = document.getElementById("playback-complete");
+        playbackComplete.innerHTML = '<h2 id="playback-title">Playback:</h2>' + '<h2 class="h2-value">0%</h2>';
+        for (let i = 0; i < points.length; i++) {
+            mapOptions.center = {
+                lat: points[i].lat,
+                lng: points[i].lng
+            };
+            map.panTo(mapOptions.center);
+            map.setZoom(20);
+            playbackComplete.innerHTML = '<h2 id="playback-title">Playback:</h2>' + '<h2 class="h2-value">'
+                + Math.round(((points[i].timestamp - points[0].timestamp)
+                    / (points[points.length - 1].timestamp - points[0].timestamp)
+                ) * 100) + "%" + '</h2>';
+            if (i < points.length) {
+                // await sleep(points[i + 1].timestamp - points[i].timestamp);
+                await sleep(1000);
+            }
+            playbackComplete.innerHTML = '';
+        }
+        webGLOverlayView.requestRedraw();
     });
 
     webGLOverlayView.onAdd = () => {
@@ -107,6 +130,12 @@ function initWebGLOverlayView(map) {
         let floor = document.getElementById("floor");
         if (data[0][0]['Floor label'] !== undefined && data[0][0]['Floor label'] !== 'null') {
             floor.innerHTML = '<h2 id="floor">Floor:</h2>' + '<h2 class="h2-value">' + data[0][0]['Floor label'] + '</h2>';
+        }
+
+        if (data[0][1] !== undefined && data[0][1] !== null) {
+            playbackButton.style.display = "block";
+        } else {
+            playbackButton.style.display = "none";
         }
 
         // solid area
@@ -209,6 +238,12 @@ function initWebGLOverlayView(map) {
                     floor.innerHTML = "";
                 }
 
+                if (data[selectedValue][1] !== undefined && data[selectedValue][1] !== null) {
+                    playbackButton.style.display = "block";
+                } else {
+                    playbackButton.style.display = "none";
+                }
+
                 let source = "";
                 switch (data[selectedValue][0].Activity.toLowerCase()) {
                     case "cycling":
@@ -251,28 +286,11 @@ function initWebGLOverlayView(map) {
                 // check wheteher there is a trajectory and add points if is
                 if (data[selectedValue][1] !== undefined || data[selectedValue][1] !== null) {
                     for (let [_key, value] of Object.entries(data[selectedValue])) {
-
-                        let [latOrigin, lngOrigin, altOrigin] = latLngAltToMeters(
-                            mapOptions.center.lat,
-                            mapOptions.center.lng,
-                            mapOptions.altitude,
-                        );
-                        let [lat, lng, alt] = latLngAltToMeters(
-                            value.Latitude,
-                            value.Longitude,
-                            value.Altitude
-                        );
                         points.push(
-                            new THREE.Vector3(
-                                latOrigin - lat, lngOrigin - lng, altOrigin - alt
-                            )
+                            { lat: value.Latitude, lng: value.Longitude, altitude: value.Altitude, timestamp: value.Timestamp }
                         );
                     }
                 }
-
-                // drawing trajectory
-                geometry = new THREE.BufferGeometry().setFromPoints(points);
-                line = new THREE.Line(geometry, material);
 
                 webGLOverlayView.requestRedraw();
             });

@@ -22,6 +22,8 @@ h2 {
 
 #buttons {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 #action-buttons {
@@ -83,7 +85,7 @@ h2 {
 }
 
 .data-list-item:hover {
-  background-color: green;
+  background-color: #419210;
   color: white;
 }
 
