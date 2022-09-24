@@ -9,10 +9,12 @@ The task was provided by Google.
 
 The task requires to work with Google Maps, more precisely with Google Maps JS API and WebGL.
 Marker is the point on map where a person located. It can be duck, car and bike.\
+
 The blue area that surrounds the marker is the accuracy of location (e.g. the person migth be at any point from that field)\
-The `reset position` button returns to the position where the ruby is located\
+The `reset position` button returns to the position where the marker is located\
+
 Two buttons called `Solid` and `Wareframe` are responsible for enabling/disabling of area of uncertainty\
-The green box is a select, from which the mock data might be choosen
+The green box is a select, from which the mock data might be chosen
 
 ## Setup
 
