@@ -1,37 +1,48 @@
 html,
 body,
 #map {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  font-family: "Roboto", sans-serif;
 }
 
 #data-list {
-    width: 50%;
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0 auto;
-    z-index: 100;
-    background-color: white;
-    border-radius: 4px;
-    box-shadow: 0px 1px 1px #ccc;
-    overflow-y: scroll;
-    max-height: 50%;
-    padding: 10px 24px;
+  width: 50%;
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0 auto;
+  z-index: 100;
+  background-color: #419210;
+  color: white;
+  border-radius: 64px;
+  box-shadow: 0px 5px 10px #419210;
+  overflow-y: scroll;
+  max-height: 50%;
+  padding: 16px 24px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .data-list-item {
-    
 }
 
 .data-list-item:hover {
-    background-color: green;
-    color: white;
+  background-color: green;
+  color: white;
 }
 
-.data-list-item-picture {}
-.data-list-item-content {}
-.data-list-item-title {}
-.data-list-item-text {}
+.data-list-item-picture {
+}
+.data-list-item-content {
+}
+.data-list-item-title {
+}
+.data-list-item-text {
+}
