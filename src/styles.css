@@ -16,25 +16,29 @@ body {
   flex-direction: row;
 }
 
+h2 {
+  margin: 8px 0;
+}
+
 #buttons {
   display: flex;
 }
 
 #action-buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 #action-buttons .button {
-    background-color: #419210;
+  background-color: #419210;
 }
 
 #panel {
   width: 400px;
   z-index: 100;
-  box-shadow: 0px 5px 10px rgba(25, 25, 25, 0.16);
+  box-shadow: 10px 0 10px rgba(25, 25, 25, 0.16);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -57,16 +61,25 @@ body {
   font-weight: 700;
 }
 
-#activity {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 24px;
+.menu-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.menu-text {
+  padding-top: 20px;
+}
+
+.menu-text h2 {
+  font-size: 18px;
+  padding: 0 16px;
 }
 
 #activity-pic {
-    height: 200px;
-    width: 100%;
+  height: 200px;
+  width: 100%;
 }
 
 .data-list-item:hover {
@@ -75,21 +88,21 @@ body {
 }
 
 .button {
-    border-radius: 16px;
-    padding: 16px 24px;
-    color: white;
-    background-color: #333333;
-    font-weight: 600;
-    text-align: center;
-    flex: 1;
+  border-radius: 16px;
+  padding: 16px 24px;
+  color: white;
+  background-color: #333333;
+  font-weight: 600;
+  text-align: center;
+  flex: 1;
 }
 
 .button:hover {
-    background-color: #555;
-    cursor: pointer;
+  background-color: #555;
+  cursor: pointer;
 }
 
 .h2-value {
-    font-weight: 400;
-    color: #419210;
+  font-weight: 400;
+  color: #419210;
 }

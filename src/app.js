@@ -66,13 +66,17 @@ function initWebGLOverlayView(map) {
         dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
         loader.setDRACOLoader(dracoLoader);
 
-        const source = "./models/ruby.gltf";
+        const source = "./models/duck.gltf";
         loader.load(
             source,
             function (gltf) {
-                gltf.scene.scale.set(1, 2, 1);
+                gltf.scene.scale.set(1, 1, 1);
                 gltf.scene.rotation.x = 90 * Math.PI / 180; // rotations are in radians
                 scene.add(gltf.scene);
+
+                dataList.addEventListener('change', function (event) {
+                    scene.remove(gltf.scene);
+                });
             }, undefined, function (error) {
                 console.error(error);
             }
@@ -131,11 +135,13 @@ function initWebGLOverlayView(map) {
         activityValue.innerHTML = data[0][0].Activity;
 
         let identifier = document.getElementById("identifier");
-        identifier.innerHTML = "Identifier: " + data[0][0].Identifier;
+        if (data[0][0].Identifier !== undefined && data[0][0].Identifier !== 'null') {
+            identifier.innerHTML = '<h2 id="identifier">Identifier:</h2>"' + '<h2 class="h2-value">' + data[0][0].Identifier + '</h2>';
+        }
 
         let floor = document.getElementById("floor");
         if (data[0][0]['Floor label'] !== undefined && data[0][0]['Floor label'] !== 'null') {
-            floor.innerHTML = "Floor: " + data[0][0]['Floor label'];
+            floor.innerHTML = '<h2 id="floor">Floor:</h2>' + '<h2 class="h2-value">' + data[0][0]['Floor label'] + '</h2>';
         }
 
         // solid area
@@ -225,12 +231,50 @@ function initWebGLOverlayView(map) {
 
                 // update properties
                 activityValue.innerHTML = data[selectedValue][0].Activity;
-                identifier.innerHTML = "Identifier: " + data[selectedValue][0].Identifier;
+
+                if (data[selectedValue][0].Identifier !== undefined && data[selectedValue][0].Identifier !== 'null') {
+                    identifier.innerHTML = '<h2 id="identifier">Identifier:</h2>' + '<h2 class="h2-value">' + data[selectedValue][0].Identifier + '</h2>';
+                } else {
+                    identifier.innerHTML = "";
+                }
+
                 if (data[selectedValue][0]['Floor label'] !== undefined && data[selectedValue][0]['Floor label'] !== 'null') {
-                    floor.innerHTML = "Floor: " + data[selectedValue][0]['Floor label'];
+                    floor.innerHTML = '<h2 id="floor">Floor:</h2>' + '<h2 class="h2-value">' + data[selectedValue][0]['Floor label'] + '</h2>';
                 } else {
                     floor.innerHTML = "";
                 }
+
+                let source = "";
+                switch (data[selectedValue][0].Activity.toLowerCase()) {
+                    case "cycling":
+                        source = "./models/bike.gltf"
+                        break;
+                    case "driving":
+                        source = "./models/car.gltf"
+                        break;
+                    case "unknown":
+                        source = "./models/duck.gltf"
+                    case "walking":
+                        source = "./models/duck.gltf"
+                    case "running":
+                        source = "./models/duck.gltf"
+                }
+
+                loader.load(
+                    source,
+                    function (gltf) {
+                        gltf.scene.scale.set(1, 1, 1);
+                        gltf.scene.rotation.x = 90 * Math.PI / 180; // rotations are in radians
+                        scene.add(gltf.scene);
+
+                        dataList.addEventListener('change', function (event) {
+                            scene.remove(gltf.scene);
+                        });
+
+                    }, undefined, function (error) {
+                        console.error(error);
+                    }
+                );
 
                 // rescaling the area
                 mesh.scale.x = mesh2.scale.x = 0;
