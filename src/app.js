@@ -17,7 +17,8 @@ let mapOptions = {
     "mapId": process.env.MAP_ID,
 }
 
-let choosenPerson = 0;
+let points = [];
+const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
 
 async function initMap() {
     const mapDiv = document.getElementById("map");
@@ -32,63 +33,6 @@ function initWebGLOverlayView(map) {
     const webGLOverlayView = new google.maps.WebGLOverlayView();
 
     webGLOverlayView.onAdd = () => {
-        var data = require('./data/data.json');
-        const dataList = document.getElementById("data-list");
-
-        mapOptions.center = {
-            lat: data[0][0].Latitude,
-            lng: data[0][0].Longitude,
-        };
-        mapOptions.altitude = data[0][0].Altitude;
-
-        for (let i = 0; i < data.length; i++) {
-            const dataListItem = document.createElement("option");
-            const dataListItemPicture = document.createElement("div");
-            const dataListItemContent = document.createElement("div");
-            const dataListItemTitle = document.createElement("div");
-            const dataListItemText = document.createElement("div");
-
-            dataListItem.className = "data-list-item";
-
-            dataListItemPicture.className = "data-list-item-picture";
-            dataListItemContent.className = "data-list-item-content";
-            dataListItemTitle.className = "data-list-item-title";
-            dataListItemText.className = "data-list-item-text";
-
-            dataListItemTitle.innerHTML = "Dev" + (i + 1) + " " + data[i][0].Identifier;
-            dataListItemText.innerHTML = data[i][0].Activity;
-
-            dataListItem.onclick = () => {
-                dataListItem.style.backgroundColor = "#bbdaa4";
-                dataListItem.style.color = "white";
-
-                choosenPerson = i;
-
-                // Update the center position
-                mapOptions.center = {
-                    lat: data[i][0].Latitude,
-                    lng: data[i][0].Longitude,
-                }
-                mapOptions.altitude = data[i][0].Altitude;
-                map.setCenter(mapOptions.center);
-
-                if (data[i].length > 1) {
-                    data[i].forEach(element => {
-                        console.log(element);
-                    });
-                }
-                // map.setTilt(65);
-
-                webGLOverlayView.requestRedraw();
-            };
-
-            dataListItemContent.appendChild(dataListItemTitle);
-            dataListItemContent.appendChild(dataListItemText);
-            dataListItem.appendChild(dataListItemPicture);
-            dataListItem.appendChild(dataListItemContent);
-            dataList.appendChild(dataListItem);
-        }
-
         // set up the scene
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera();
@@ -118,6 +62,65 @@ function initWebGLOverlayView(map) {
                 console.error(error);
             }
         );
+
+        var data = require('./data/data.json');
+        const dataList = document.getElementById("data-list");
+
+        mapOptions.center = {
+            lat: data[0][0].Latitude,
+            lng: data[0][0].Longitude,
+        };
+        mapOptions.altitude = data[0][0].Altitude;
+
+        for (let i = 0; i < data.length; i++) {
+            const dataListItem = document.createElement("option");
+            const dataListItemPicture = document.createElement("div");
+            const dataListItemContent = document.createElement("div");
+            const dataListItemTitle = document.createElement("div");
+            const dataListItemText = document.createElement("div");
+
+            dataListItem.className = "data-list-item";
+            dataListItem.value = i;
+
+            dataListItemPicture.className = "data-list-item-picture";
+            dataListItemContent.className = "data-list-item-content";
+            dataListItemTitle.className = "data-list-item-title";
+            dataListItemText.className = "data-list-item-text";
+
+            dataListItemTitle.innerHTML = "<b>Dev" + (i + 1) + "</b> " + data[i][0].Identifier;
+            dataListItemText.innerHTML = "; " + data[i][0].Activity;
+
+            dataList.addEventListener('change', function(event) {
+                let selectedValue = event.target.value;
+                points = [];
+
+                // Update the center position
+                mapOptions.center = {
+                    lat: data[selectedValue][0].Latitude,
+                    lng: data[selectedValue][0].Longitude,
+                }
+                mapOptions.altitude = data[selectedValue][0].Altitude;
+                map.setCenter(mapOptions.center);
+
+                if (data[selectedValue][1] !== undefined || data[selectedValue][1] !== null) {
+                    for (let [key, value] of Object.entries(data[selectedValue])) {
+                        points.push(new THREE.Vector3(value.Latitude, value.Longitude, value.Altitude));
+                    }
+                }
+                console.log(points);
+                let geometry = new THREE.BufferGeometry().setFromPoints(points);
+                let line = new THREE.Line(geometry, material);
+
+                scene.add(line);
+                webGLOverlayView.requestRedraw();
+            });
+
+            dataListItemContent.appendChild(dataListItemTitle);
+            dataListItemContent.appendChild(dataListItemText);
+            dataListItem.appendChild(dataListItemPicture);
+            dataListItem.appendChild(dataListItemContent);
+            dataList.appendChild(dataListItem);
+        }
     }
 
     webGLOverlayView.onContextRestored = ({ gl }) => {
@@ -144,10 +147,12 @@ function initWebGLOverlayView(map) {
             altitude: mapOptions.altitude,
         }
 
+        console.log(points);
+
         const matrix = transformer.fromLatLngAltitude(latLngAltitudeLiteral);
         camera.projectionMatrix = new THREE.Matrix4().fromArray(matrix);
 
-        webGLOverlayView.requestRedraw();
+     
         renderer.render(scene, camera);
 
         // always reset the GL state
