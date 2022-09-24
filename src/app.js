@@ -37,7 +37,7 @@ async function initMap() {
 }
 
 function initWebGLOverlayView(map) {
-    let scene, scene2, renderer, renderer2, camera, camera2, loader, loader2;
+    let scene, renderer, camera, loader;
     const webGLOverlayView = new google.maps.WebGLOverlayView();
 
     google.maps.event.addDomListener(document.getElementById("reset"), 'click', function () {
@@ -82,41 +82,6 @@ function initWebGLOverlayView(map) {
             }
         );
 
-        /* Picture test */
-        // camera2 = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 10000);
-        // camera2.position.z = 1800;
-
-        // scene2 = new THREE.Scene();
-        // scene2.background = new THREE.Color(0xffffff);
-
-        // const light = new THREE.DirectionalLight(0xffffff);
-        // light.position.set(0, 0, 1);
-        // scene2.add(light);
-
-        // let container = document.getElementById('activity-pic');
-
-        // loader2 = new GLTFLoader();
-        // dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
-        // loader2.setDRACOLoader(dracoLoader);
-
-        // const source2 = "./models/car.gltf";
-        // loader2.load(
-        //     source2,
-        //     function (gltf) {
-        //         gltf.scene.scale.set(100, 100, 100);
-        //         gltf.scene.rotation.x = 90 * Math.PI / 180; // rotations are in radians
-        //         scene.add(gltf.scene2);
-        //     }, undefined, function (error) {
-        //         console.error(error);
-        //     }
-        // );
-
-        // renderer2 = new THREE.WebGLRenderer({ antialias: true });
-        // renderer2.setPixelRatio(window.devicePixelRatio);
-        // renderer2.setSize(400, 200);
-        // container.appendChild(renderer2.domElement);
-        /* Test End */
-
         // location data
         var data = require('./data/data.json');
         const dataList = document.getElementById("data-list");
@@ -147,7 +112,7 @@ function initWebGLOverlayView(map) {
         // solid area
         let mesh = new THREE.Mesh(
             new THREE.SphereGeometry(1, 20, 20),
-            new THREE.MeshBasicMaterial({ color: 0x0000FF, wireframe: false, transparent: true, opacity: 0.1 })
+            new THREE.MeshBasicMaterial({ color: 0x43A6C6, wireframe: false, transparent: true, opacity: 0.2 })
         );
         mesh.applyMatrix4(new THREE.Matrix4().makeScale(areaOptions.horizontalAccuracy, areaOptions.verticalAccuracy, areaOptions.horizontalAccuracy));
         mesh.rotation.x = Math.PI / 2;
@@ -156,7 +121,7 @@ function initWebGLOverlayView(map) {
         // wireframe area
         let mesh2 = new THREE.Mesh(
             new THREE.SphereGeometry(1, 20, 20),
-            new THREE.MeshBasicMaterial({ color: 0x0000FF, wireframe: true, transparent: true, opacity: 0.1 })
+            new THREE.MeshBasicMaterial({ color: 0x43A6C6, wireframe: true, transparent: true, opacity: 0.2 })
         );
         mesh2.applyMatrix4(new THREE.Matrix4().makeScale(areaOptions.horizontalAccuracy, areaOptions.verticalAccuracy, areaOptions.horizontalAccuracy));
         mesh2.rotation.x = Math.PI / 2;
@@ -166,11 +131,11 @@ function initWebGLOverlayView(map) {
         solid.addEventListener('click', function () {
             switch (mesh.material.opacity) {
                 case 0:
-                    mesh.material.opacity = 0.1;
+                    mesh.material.opacity = 0.2;
                     solid.style.backgroundColor = "#419210";
                     solid.style.color = "#fff";
                     break;
-                case 0.1:
+                case 0.2:
                     mesh.material.opacity = 0;
                     solid.style.backgroundColor = "#ccc";
                     solid.style.color = "#333";
@@ -182,11 +147,11 @@ function initWebGLOverlayView(map) {
         wireframe.addEventListener('click', function () {
             switch (mesh2.material.opacity) {
                 case 0:
-                    mesh2.material.opacity = 0.1;
+                    mesh2.material.opacity = 0.2;
                     wireframe.style.backgroundColor = "#419210";
                     wireframe.style.color = "#fff";
                     break;
-                case 0.1:
+                case 0.2:
                     mesh2.material.opacity = 0;
                     wireframe.style.backgroundColor = "#ccc";
                     wireframe.style.color = "#333";
@@ -253,9 +218,7 @@ function initWebGLOverlayView(map) {
                         source = "./models/car.gltf"
                         break;
                     case "unknown":
-                        source = "./models/duck.gltf"
                     case "walking":
-                        source = "./models/duck.gltf"
                     case "running":
                         source = "./models/duck.gltf"
                 }
@@ -311,8 +274,6 @@ function initWebGLOverlayView(map) {
                 geometry = new THREE.BufferGeometry().setFromPoints(points);
                 line = new THREE.Line(geometry, material);
 
-                console.log(points);
-
                 webGLOverlayView.requestRedraw();
             });
 
@@ -354,7 +315,6 @@ function initWebGLOverlayView(map) {
         // Request a redraw and render the scene.
         webGLOverlayView.requestRedraw();
         renderer.render(scene, camera);
-        // renderer.render(scene2, camera2);
 
         // always reset the GL state
         renderer.resetState();
