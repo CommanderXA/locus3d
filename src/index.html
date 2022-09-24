@@ -17,7 +17,38 @@
     <script src="./app.js" defer></script>
   </head>
   <body>
-    <select id="data-list"></select>
+    <div
+      id="panel"
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      "
+    >
+      <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between">
+        <div>
+          <!-- <h1>Object</h1> -->
+          <select id="data-list"></select>
+
+          <div>
+            <div id="activity">
+              <h2 id="activity-title">Activity</h2>
+              <h2 class="h2-value" id="activity-value"></h2>
+            </div>
+            <div id="activity-pic"></div>
+            <h2 id="identifier"></h2>
+            <h2 id="floor"></h2>
+          </div>
+        </div>
+        <div id="buttons">
+          <div id="reset" class="button">Reset Position</div>
+        </div>
+      </div>
+      <div id="action-buttons">
+        <div id="wireframe" class="button">Wireframe</div>
+        <div id="solid" class="button">Solid</div>
+      </div>
+    </div>
     <div id="map"></div>
   </body>
 </html>

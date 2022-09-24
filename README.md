@@ -8,6 +8,10 @@ The task was provided by Google.
 ## The task
 
 The task requires to work with Google Maps, more precisely with Google Maps JS API and WebGL.
+Ruby is the point on map where a person located.
+The blue area that surrounds the ruby is the accuracy of location (e.g. the person migth be at any point from that field)
+The `reset position` button returns to the position where the ruby is located
+The green box is a select, from which the mock data might be choosen
 
 ## Setup
 

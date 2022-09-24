@@ -37,8 +37,14 @@ async function initMap() {
 }
 
 function initWebGLOverlayView(map) {
-    let scene, renderer, camera, loader;
+    let scene, scene2, renderer, renderer2, camera, camera2, loader, loader2;
     const webGLOverlayView = new google.maps.WebGLOverlayView();
+
+    google.maps.event.addDomListener(document.getElementById("reset"), 'click', function () {
+        map.setCenter(mapOptions.center);
+        map.setZoom(mapOptions.zoom);
+        map.setTilt(mapOptions.tilt);
+    });
 
     webGLOverlayView.onAdd = () => {
         // set up the scene
@@ -50,15 +56,15 @@ function initWebGLOverlayView(map) {
         directionalLight.position.set(0.5, -1, 0.5);
         scene.add(directionalLight);
 
-        // load the model    
+        let geometry = new THREE.BufferGeometry().setFromPoints(points);
+        let line = new THREE.Line(geometry, material);
+        scene.add(line);
+
+        // load model
         loader = new GLTFLoader();
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
         loader.setDRACOLoader(dracoLoader);
-
-        let geometry = new THREE.BufferGeometry().setFromPoints(points);
-        let line = new THREE.Line(geometry, material);
-        scene.add(line);
 
         const source = "./models/ruby.gltf";
         loader.load(
@@ -67,13 +73,45 @@ function initWebGLOverlayView(map) {
                 gltf.scene.scale.set(1, 2, 1);
                 gltf.scene.rotation.x = 90 * Math.PI / 180; // rotations are in radians
                 scene.add(gltf.scene);
-                gltf.animations;
-                gltf.scene;
-                gltf.asset;
             }, undefined, function (error) {
                 console.error(error);
             }
         );
+
+        /* Picture test */
+        // camera2 = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 10000);
+        // camera2.position.z = 1800;
+
+        // scene2 = new THREE.Scene();
+        // scene2.background = new THREE.Color(0xffffff);
+
+        // const light = new THREE.DirectionalLight(0xffffff);
+        // light.position.set(0, 0, 1);
+        // scene2.add(light);
+
+        // let container = document.getElementById('activity-pic');
+
+        // loader2 = new GLTFLoader();
+        // dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+        // loader2.setDRACOLoader(dracoLoader);
+
+        // const source2 = "./models/car.gltf";
+        // loader2.load(
+        //     source2,
+        //     function (gltf) {
+        //         gltf.scene.scale.set(100, 100, 100);
+        //         gltf.scene.rotation.x = 90 * Math.PI / 180; // rotations are in radians
+        //         scene.add(gltf.scene2);
+        //     }, undefined, function (error) {
+        //         console.error(error);
+        //     }
+        // );
+
+        // renderer2 = new THREE.WebGLRenderer({ antialias: true });
+        // renderer2.setPixelRatio(window.devicePixelRatio);
+        // renderer2.setSize(400, 200);
+        // container.appendChild(renderer2.domElement);
+        /* Test End */
 
         // location data
         var data = require('./data/data.json');
@@ -88,11 +126,24 @@ function initWebGLOverlayView(map) {
         areaOptions.horizontalAccuracy = data[0][0]['Horizontal accuracy'];
         areaOptions.verticalAccuracy = data[0][0]['Vertical accuracy'];
 
+        // initialize info
+        let activityValue = document.getElementById("activity-value");
+        activityValue.innerHTML = data[0][0].Activity;
+
+        let identifier = document.getElementById("identifier");
+        identifier.innerHTML = "Identifier: " + data[0][0].Identifier;
+
+        let floor = document.getElementById("floor");
+        if (data[0][0]['Floor label'] !== undefined && data[0][0]['Floor label'] !== 'null') {
+            floor.innerHTML = "Floor: " + data[0][0]['Floor label'];
+        }
+
         // solid area
         let mesh = new THREE.Mesh(
             new THREE.SphereGeometry(1, 20, 20),
             new THREE.MeshBasicMaterial({ color: 0x0000FF, wireframe: false, transparent: true, opacity: 0.1 })
         );
+        mesh.applyMatrix4(new THREE.Matrix4().makeScale(areaOptions.horizontalAccuracy, areaOptions.verticalAccuracy, areaOptions.horizontalAccuracy));
         mesh.rotation.x = Math.PI / 2;
         scene.add(mesh);
 
@@ -104,6 +155,38 @@ function initWebGLOverlayView(map) {
         mesh2.applyMatrix4(new THREE.Matrix4().makeScale(areaOptions.horizontalAccuracy, areaOptions.verticalAccuracy, areaOptions.horizontalAccuracy));
         mesh2.rotation.x = Math.PI / 2;
         scene.add(mesh2);
+
+        let solid = document.getElementById("solid");
+        solid.addEventListener('click', function () {
+            switch (mesh.material.opacity) {
+                case 0:
+                    mesh.material.opacity = 0.1;
+                    solid.style.backgroundColor = "#419210";
+                    solid.style.color = "#fff";
+                    break;
+                case 0.1:
+                    mesh.material.opacity = 0;
+                    solid.style.backgroundColor = "#ccc";
+                    solid.style.color = "#333";
+                    break;
+            }
+        });
+
+        let wireframe = document.getElementById("wireframe");
+        wireframe.addEventListener('click', function () {
+            switch (mesh2.material.opacity) {
+                case 0:
+                    mesh2.material.opacity = 0.1;
+                    wireframe.style.backgroundColor = "#419210";
+                    wireframe.style.color = "#fff";
+                    break;
+                case 0.1:
+                    mesh2.material.opacity = 0;
+                    wireframe.style.backgroundColor = "#ccc";
+                    wireframe.style.color = "#333";
+                    break;
+            }
+        });
 
         // showing the data
         for (let i = 0; i < data.length; i++) {
@@ -134,10 +217,20 @@ function initWebGLOverlayView(map) {
                     lng: data[selectedValue][0].Longitude,
                 }
                 mapOptions.altitude = data[selectedValue][0].Altitude;
-                map.setCenter(mapOptions.center, 50);
+                map.setCenter(mapOptions.center);
+                map.setZoom(mapOptions.zoom);
 
                 areaOptions.horizontalAccuracy = data[selectedValue][0]['Horizontal accuracy'];
                 areaOptions.verticalAccuracy = data[selectedValue][0]['Vertical accuracy'];
+
+                // update properties
+                activityValue.innerHTML = data[selectedValue][0].Activity;
+                identifier.innerHTML = "Identifier: " + data[selectedValue][0].Identifier;
+                if (data[selectedValue][0]['Floor label'] !== undefined && data[selectedValue][0]['Floor label'] !== 'null') {
+                    floor.innerHTML = "Floor: " + data[selectedValue][0]['Floor label'];
+                } else {
+                    floor.innerHTML = "";
+                }
 
                 // rescaling the area
                 mesh.scale.x = mesh2.scale.x = 0;
@@ -150,7 +243,7 @@ function initWebGLOverlayView(map) {
 
                 // check wheteher there is a trajectory and add points if is
                 if (data[selectedValue][1] !== undefined || data[selectedValue][1] !== null) {
-                    for (let [key, value] of Object.entries(data[selectedValue])) {
+                    for (let [_key, value] of Object.entries(data[selectedValue])) {
 
                         let [latOrigin, lngOrigin, altOrigin] = latLngAltToMeters(
                             mapOptions.center.lat,
@@ -217,6 +310,7 @@ function initWebGLOverlayView(map) {
         // Request a redraw and render the scene.
         webGLOverlayView.requestRedraw();
         renderer.render(scene, camera);
+        // renderer.render(scene2, camera2);
 
         // always reset the GL state
         renderer.resetState();
