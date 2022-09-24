@@ -2,12 +2,12 @@
 
 ## What is it?
 
-This project was developed during HackNU.\
+This project was developed during **HackNU**.\
 The task was provided by Google.
 
-## The problem
+## The task
 
-The task requires to work with Google Maps, more preciesly with Google Maps JS API and WebGL.
+The task requires to work with Google Maps, more precisely with Google Maps JS API and WebGL.
 
 ## Setup
 
@@ -23,7 +23,15 @@ This file has to contain (All of that is available on Google Maps Developer Cons
 - MAPS_API
 - MAP_ID
 
-To run project execute:
+To run the project execute:
 
 - `npm i`
 - `npm start`
+
+## License
+
+The project is under MIT License
+
+## Problems
+
+If something doesn't work as intended, please disable browser add-ons that may blocking the functionality
